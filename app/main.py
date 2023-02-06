@@ -15,10 +15,20 @@ async def home(request: Request):
     return templates.TemplateResponse("index.html", {"request": request, "data": data})
 
 
-@app.get("/page/{page_name}", response_class=HTMLResponse)
-async def page(request: Request, page_name: str):
-    data = {"page": page_name}
-    return templates.TemplateResponse("index.html", {"request": request, "data": data})
+@app.get("/gallery", response_class=HTMLResponse)
+async def gallery(request: Request):
+    return templates.TemplateResponse("gallery.html", {"request": request})
+
+
+# @app.get("/page/{page_name}", response_class=HTMLResponse)
+# async def page(request: Request, page_name: str):
+#     data = {"page": page_name}
+#     return templates.TemplateResponse("index.html", {"request": request, "data": data})
+
+# @app.get("/gallery", response_class=HTMLResponse)
+# async def page(request: Request, page_name: str):
+#     data = {"page": page_name}
+#     return templates.TemplateResponse("index.html", {"request": request, "data": data})
 
 
 @app.post("/upload")
