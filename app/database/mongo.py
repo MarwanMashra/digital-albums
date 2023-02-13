@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from os.path import join, dirname
-import dns, pymongo, sys, pprint
+import dns, pymongo, sys, pprint, urllib
 
 
 """Extrait de mongoDB manual:
@@ -25,14 +25,13 @@ for line in f:
 
 client = pymongo.MongoClient(
     "mongodb+srv://"
-    + init["username"]
+    + urllib.parse.quote_plus(init["username"])
     + ":"
-    + init["password"]
-    + "@cluster0-pvpbx.gcp.mongodb.net/"
-    + init["dbname"]
+    + urllib.parse.quote_plus(init["password"])
+    + "@cluster0.x6qcjdn.mongodb.net/"
+    + urllib.parse.quote_plus(init["dbname"])
     + "?retryWrites=true&w=majority"
 )[init["dbname"]]
-# client = pymongo.MongoClient("mongodb+srv://MarwanMashra:<password>@cluster0.x6qcjdn.mongodb.net/?retryWrites=true&w=majority", server_api=ServerApi('1'))
 
 
 class Mongo:

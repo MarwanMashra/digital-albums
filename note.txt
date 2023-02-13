@@ -1,1 +1,4 @@
 uvicorn app.main:app --reload --port 8080
+
+client = pymongo.MongoClient("mongodb+srv://MarwanMashra:<password>@cluster0.x6qcjdn.mongodb.net/?retryWrites=true&w=majority", server_api=ServerApi('1'))
+db = client.test

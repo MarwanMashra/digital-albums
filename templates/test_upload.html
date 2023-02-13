@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="utf-8">
+    <title>Multiple-Uploader.js</title>
+    <link type="text/css" rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+
+</head>
+<body>
+
+
+<form method="POST" action="/upload" name="form" id="form" enctype="multipart/form-data">
+    <input type="file" name="images[]" multiple="multiple">
+    <input type="text" name="test">
+    <button>Upload</button>
+</form>
+
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+<script>
+    $(document).ready(function() {
+        console.log("ready")
+        // $('.input-images').imageUploader();
+        // ajax for the form form-upload-images to send as data the list of images  
+        $('#form').submit(function(e) {
+            $("input[name='images[]']").attr("name", "images");
+            attr = $("input[type='file']").attr("name")
+            console.log(attr)
+            // e.preventDefault();
+            // alert("upload")
+            // image_val = $('input[type=file]').val()    // fakepath
+            // selector = 'input[name=image]'
+            // image_files = $(selector)[0].files    // FileList
+            // image_prop = $(selector).prop('files')   // FileList
+            // console.log(image_prop);
+            // var data = new FormData();
+            // data.append("test", "this is a test")
+            // console.log(data.get("image"))
+            // jQuery.ajax({
+            //     url: '/upload',
+            //     data: data,
+            //     cache: false,
+            //     contentType: "multipart/form-data",
+            //     processData: false,
+            //     type: 'POST',
+            //     success: function(data){
+            //         alert(data);
+            //     }
+            // });
+            // var formData = new FormData();
+            // images = $('input[type=file]')[0].files;
+            // formData['images'] = images;
+            // $.ajax({
+            //     url: '/upload',
+            //     type: 'POST',
+            //     data: formData,
+            //     processData: false,
+            //     contentType: false,
+            //     success: function(data) {
+            //         console.log(data);
+            //     }
+            // });
+        });
+
+
+    });
+</script>
+
+</body>
+</html>

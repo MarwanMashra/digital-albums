@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="utf-8">
+    <title>Multiple-Uploader.js</title>
+    <link type="text/css" rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link href="ssi-uploader/dist/ssi-uploader/styles/ssi-uploader.min.css" rel="stylesheet"/>
+    <link type="text/css" rel="stylesheet" href="{{ url_for('static', path='/libraries/ssi-uploader/styles/ssi-uploader.min.css') }}">
+    <!-- <link type="text/css" rel="stylesheet" href="{{ url_for('static', path='/libraries/jquery-image-uploader/styles/image-uploader.min.css') }}"> -->
+
+</head>
+<body>
+
+
+<!-- <form method="POST" action="/upload" name="form-upload-images" id="form-upload-images" enctype="multipart/form-data"> -->
+    <!-- <div class="input-images"></div> -->
+<input type="file" id="ssi-uploader" name="images" multiple="multiple">
+    <!-- <button>Upload</button>
+</form> -->
+
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+<!-- <script src="{{ url_for('static', path='/libraries/jquery-image-uploader/js/image-uploader.min.js') }}"></script> -->
+<script src="{{ url_for('static', path='/libraries/ssi-uploader/js/ssi-uploader.min.js') }}"></script>
+<!-- <script src="ssi-uploader/dist/ssi-uploader/js/ssi-uploader.min.js"></script> -->
+<script>
+    $(document).ready(function() {
+        $('input[name="images"]').ssi_uploader({
+            url:'/upload',
+            BeforeEachUpload:function(fileInfo,xhr){
+                if(fileInfo.name=='noImage.jpg'){
+                    throw new Error('custom message')
+                }
+            }
+        })
+        // $('.input-images').imageUploader();
+        // $('#form-upload-images').submit(function(e) {
+        //     $("input[name='images[]']").attr("name", "images");
+        // });
+    });
+
+</script>
+
+</body>
+</html>

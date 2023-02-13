@@ -3,19 +3,44 @@
     <title>My First Template</title>
     <!-- Custom CSS -->
     <link href="{{ url_for('static', path='/styles/style.css') }}" rel="stylesheet">
-    <link href="{{ url_for('static', path='/libraries/ssi-uploader/styles/ssi-uploader.css') }}" rel="stylesheet">
     <!-- <script src="{{ url_for('static', path='/libraries/ssi-uploader/styles/ssi-uploader.css') }}"></script> -->
     <!-- <link rel="stylesheet" href="dist/ssi-uploader/styles/ssi-uploader.css"/>  -->
 </head>
 <body>
-    <h1>My First Template</h1>
-    <p>My first template is working!</p>
-    <input type="file" multiple id="ssi-upload"/>
-    {{data.page}}
+    <h1>User: {{username}}</h1>
+    
+    <form method="POST" action="/create_album" name="form-create-album" id="form-create-album" onsubmit="required()">
+        <label for="album_name">Album Name</label>
+        <input type="text" name="album_name" id="album_name" required>
+        <button>create</button>
+    </form>
+
+    <div id="albums"></div>
 
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-    <script src="{{ url_for('static', path='/libraries/ssi-uploader/js/ssi-uploader.min.js') }}"></script>
     <script src="{{ url_for('static', path='/js/script.js') }}"></script>
+    <script>
+        $(document).ready(function() {
+            $.ajax({
+                type: "POST",
+                url: "/get_albums",
+                success: function(data) {
+                    displayAlbums(data)
+                }
+            });
+        });
+
+        function displayAlbums(albums){
+            html = "<h2>Albums :</h2>"
+            html += `<ul>`
+            $.each(albums, function(url,name){ 
+                html += `<li><a href="/album/${url}">${name}</a></li>`
+            }); 
+            html += `</ul>`
+            $('#albums').replaceWith(html);
+        }
+    
+    </script>
     
 </body>
 </html>

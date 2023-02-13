@@ -1,0 +1,136 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Album</title>
+    <!-- Custom CSS -->
+    <link type="text/css" rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link type="text/css" rel="stylesheet" href="{{ url_for('static', path='/libraries/jquery-image-uploader/styles/image-uploader.min.css') }}">
+    <link type="text/css" rel="stylesheet" href="{{ url_for('static', path='/libraries/lightGallery/css/lightgallery-bundle.css') }}">
+    <!-- <link type="text/css" rel="stylesheet" href="css/lightgallery-bundle.css" /> -->
+</head>
+<body>
+    <h1>Album</h1>
+    <div id="edit_section"></div>
+    <ul id="lightgallery" class="list-unstyled row">
+        <li 
+            data-src="https://avatars.githubusercontent.com/u/47461193?v=4" 
+            ata-sub-html="<h4>Image Description</p>" 
+            data-pinterest-text="Pin it1" 
+            data-tweet-text="share on twitter 1">
+            <a href="">
+              <img class="img-responsive" src="https://avatars.githubusercontent.com/u/47461193?v=4">
+            </a>
+        </li>
+        <li
+            data-src="https://avatars.githubusercontent.com/u/47461193?v=4" 
+            ata-sub-html="<h4>Image Description</p>" 
+            data-pinterest-text="Pin it1" 
+            data-tweet-text="share on twitter 2">
+            <a href="">
+              <img class="img-responsive" src="https://avatars.githubusercontent.com/u/47461193?v=4">
+            </a>
+        </li>
+        <li
+            data-src="https://avatars.githubusercontent.com/u/47461193?v=4" 
+            ata-sub-html="<h4>Image Description</p>" 
+            data-pinterest-text="Pin it1" 
+            data-tweet-text="share on twitter 3">
+            <a href="">
+              <img class="img-responsive" src="https://avatars.githubusercontent.com/u/47461193?v=4">
+            </a>
+        </li>
+      </ul>
+
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <!-- <script src="js/lightgallery.min.js"></script>
+    <script src="js/plugins/lg-thumbnail.umd.js"></script>
+    <script src="js/plugins/lg-zoom.umd.js"></script>     -->
+    <script src="{{ url_for('static', path='/libraries/lightGallery/js/lightgallery.min.js') }}"></script>
+    <script src="{{ url_for('static', path='/libraries/lightGallery/js/plugins/autoplay/lg-autoplay.umd.js') }}"></script>
+    <script src="{{ url_for('static', path='/libraries/lightGallery/js/plugins/comment/lg-comment.umd.js') }}"></script>
+    <script src="{{ url_for('static', path='/libraries/lightGallery/js/plugins/fullscreen/lg-fullscreen.umd.js') }}"></script>
+    <script src="{{ url_for('static', path='/libraries/lightGallery/js/plugins/hash/lg-hash.umd.js') }}"></script>
+    <script src="{{ url_for('static', path='/libraries/lightGallery/js/plugins/mediumZoom/lg-medium-zoom.umd.js') }}"></script>
+    <script src="{{ url_for('static', path='/libraries/lightGallery/js/plugins/pager/lg-pager.umd.js') }}"></script>
+    <script src="{{ url_for('static', path='/libraries/lightGallery/js/plugins/relativeCaption/lg-relative-caption.umd.js') }}"></script>
+    <script src="{{ url_for('static', path='/libraries/lightGallery/js/plugins/rotate/lg-rotate.umd.js') }}"></script>
+    <script src="{{ url_for('static', path='/libraries/lightGallery/js/plugins/share/lg-share.umd.js') }}"></script>
+    <script src="{{ url_for('static', path='/libraries/lightGallery/js/plugins/thumbnail/lg-thumbnail.umd.js') }}"></script>
+    <script src="{{ url_for('static', path='/libraries/lightGallery/js/plugins/video/lg-video.umd.js') }}"></script>
+    <script src="{{ url_for('static', path='/libraries/lightGallery/js/plugins/zoom/lg-zoom.umd.js') }}"></script>
+
+
+    <!-- <script src="plugins/autoplay/lg-autoplay.umd.js"></script>
+    <script src="plugins/comment/lg-comment.umd.js"></script>
+    <script src="plugins/fullscreen/lg-fullscreen.umd.js"></script>
+    <script src="plugins/hash/lg-hash.umd.js"></script>
+    <script src="plugins/mediumZoom/lg-medium-zoom.umd.js"></script>
+    <script src="plugins/pager/lg-pager.umd.js"></script>
+    <script src="plugins/relativeCaption/lg-relative-caption.umd.js"></script>
+    <script src="plugins/rotate/lg-rotate.umd.js"></script>
+    <script src="plugins/share/lg-share.umd.js"></script>
+    <script src="plugins/thumbnail/lg-thumbnail.umd.js"></script>
+    <script src="plugins/video/lg-video.umd.js"></script>
+    <script src="plugins/zoom/lg-zoom.umd.js"></script> -->
+
+    <script src="{{ url_for('static', path='/libraries/jquery-image-uploader/js/image-uploader.min.js') }}"></script>
+    <script>
+        $(document).ready(function() {
+            lightGallery(document.getElementById('lightgallery'),{
+                plugins: [lgAutoplay, lgComment, lgFullscreen, lgHash, lgMediumZoom, lgPager, lgRotate, lgShare, lgVideo, lgZoom, lgThumbnail],
+            });
+
+            path = window.location.pathname
+            if (path.split("/")[1] == "album") {
+                album_id = path.split("/")[2]
+                $.ajax({
+                    type: "POST",
+                    url: "/album/" + album_id,
+                    success: function(data) {
+                        if (data["status"] == "success") {
+                            album = data["album"]
+                            if (album_id[0] == "e") {
+                                addEditSection(album, album_id)
+                            }
+                            displayAlbum(album, album_id)
+                        } else{
+                            console.log(data["message"])
+                        }
+                    }
+                });
+            }
+        });
+
+        function addEditSection(album, album_id){
+            console.log("edit section")
+            $('#edit_section').replaceWith(`
+                    <form method="POST" action="/upload" name="form-upload-images" id="form-upload-images" enctype="multipart/form-data">
+                        <div class="input-images"></div>
+                        <input type="hidden" name="album_id" value="${album_id}">
+                        <button>Upload</button>
+                    </form>
+                `);
+            $('.input-images').imageUploader();
+            $('#form-upload-images').submit(function(e) {
+                $("input[name='images[]']").attr("name", "images");
+            });
+        }
+
+        function displayAlbum(album, album_id){
+            // console.log(album) each image in the list
+            album['images'].forEach(function(image) {
+                console.log(image)
+            });
+            
+            // lightGallery(document.getElementById('lightgallery'), {
+            //     plugins: [lgZoom, lgThumbnail],
+            //     speed: 500,
+            //     licenseKey: 'your_license_key'            
+            // });
+        }
+    
+    </script>
+    <!-- <script src="{{ url_for('static', path='/js/script.js') }}"></script> -->
+    
+</body>
+</html>
