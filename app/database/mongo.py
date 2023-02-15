@@ -251,5 +251,4 @@ class MongoRemove(Mongo):
 
     def remove(self, coll_toupd):
         coll = client[coll_toupd]
-        print(self.query)
         coll.delete_one(self.query)

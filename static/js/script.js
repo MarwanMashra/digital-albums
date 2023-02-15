@@ -1,4 +1,19 @@
 $(document).ready(function () {
+    // when lougout button is clicked
+    // $('#logout-btn').click(function () {
+    //     $.ajax({
+    //         type: "POST",
+    //         url: "/logout",
+    //         success: function (data) {
+    //             window.location.href = "/";
+    //             // alert("logout")
+    //             // if (data["status"] == "success") {
+    //             // } else {
+    //             //     console.log(data["message"])
+    //             // }
+    //         }
+    //     });
+    // });
     // $('h1').css('color', 'yellow');
 
     // $('#ssi-upload').ssi_uploader({

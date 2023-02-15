@@ -110,10 +110,20 @@
 
 
     <script src="https://code.jquery.com/jquery-3.6.3.min.js"></script>
-    <script src="{{ url_for('static', path='/libraries/lightGallery/js/lightgallery.umd.js') }}"></script>
+    <script src="{{ url_for('static', path='/libraries/lightGallery/js/lightgallery.min.js') }}"></script>
     <script src="{{ url_for('static', path='/libraries/lightGallery/js/lg-thumbnail.umd.js') }}"></script>
     <script src="{{ url_for('static', path='/libraries/lightGallery/js/lg-zoom.umd.js') }}"></script>
-    <script src="{{ url_for('static', path='/js/gallery.js') }}"></script>
+    <!-- <script src="{{ url_for('static', path='/js/gallery.js') }}"></script> -->
+
+    <script>
+        $(document).ready(function() {
+            lightGallery(document.getElementById('animated-thumbnails-gallery'), {
+                plugins: [lgThumbnail, lgZoom],
+                thumbnail: true,
+            });
+        });
+    </script>
+    
     
     
 </body>

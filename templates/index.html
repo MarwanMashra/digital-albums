@@ -1,22 +1,36 @@
 <html>
 <head>
-    <title>My First Template</title>
+    <title>My Digital Albums</title>
     <!-- Custom CSS -->
-    <link href="{{ url_for('static', path='/styles/style.css') }}" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css'>
+    <link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/css/justifiedGallery.min.css'>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.3/dist/jquery.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <link href="{{ url_for('static', path='/css/style.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', path='/css/cards.css') }}" rel="stylesheet">
     <!-- <script src="{{ url_for('static', path='/libraries/ssi-uploader/styles/ssi-uploader.css') }}"></script> -->
     <!-- <link rel="stylesheet" href="dist/ssi-uploader/styles/ssi-uploader.css"/>  -->
 </head>
 <body>
-    <h1>User: {{username}}</h1>
+    <form action="/logout" method="post">
+        <h1>My Digital Albums 
+            <button id="logout-btn" class="btn btn-secondary" style="float: right;">Logout</button>
+        </h1>
+        <br>
+        <h5>connected ({{username}}) </h5><br>
+    </form>
+    <!-- User:  -->
     
-    <form method="POST" action="/create_album" name="form-create-album" id="form-create-album" onsubmit="required()">
-        <label for="album_name">Album Name</label>
-        <input type="text" name="album_name" id="album_name" required>
-        <button>create</button>
+    <h5>Create New Album :</h5>
+    <form method="POST" action="/create_album" name="form-create-album" id="form-create-album" onsubmit="required()" class="form-inline">
+        <input type="text" class="form-control" placeholder="Enter album name" name="album_name" id="album-name" required>
+        <button class="btn btn-primary mb-2">Create</button>
     </form>
 
     <div id="albums"></div>
 
+      
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
     <script src="{{ url_for('static', path='/js/script.js') }}"></script>
     <script>
@@ -31,12 +45,21 @@
         });
 
         function displayAlbums(albums){
-            html = "<h2>Albums :</h2>"
-            html += `<ul>`
+            html = ` <section class="page-contain container"> `
             $.each(albums, function(url,name){ 
-                html += `<li><a href="/album/${url}">${name}</a></li>`
+                html += `
+                <a href="/album/${url}" class="data-card item">
+                    <h4>${name}</h4>
+                    <span class="link-text">
+                        View Album
+                        <svg width="25" height="16" viewBox="0 0 25 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M17.8631 0.929124L24.2271 7.29308C24.6176 7.68361 24.6176 8.31677 24.2271 8.7073L17.8631 15.0713C17.4726 15.4618 16.8394 15.4618 16.4489 15.0713C16.0584 14.6807 16.0584 14.0476 16.4489 13.657L21.1058 9.00019H0.47998V7.00019H21.1058L16.4489 2.34334C16.0584 1.95281 16.0584 1.31965 16.4489 0.929124C16.8394 0.538599 17.4726 0.538599 17.8631 0.929124Z" fill="#753BBD"/>
+                        </svg>
+                    </span>
+                </a>
+                `
             }); 
-            html += `</ul>`
+            html += `</section>`
             $('#albums').replaceWith(html);
         }
     
