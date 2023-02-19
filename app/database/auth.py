@@ -29,9 +29,9 @@ manager.cookie_name = "access-token"
 
 
 @manager.user_loader()
-def load_user(username: str):
+async def load_user(username: str):
     account_coll = MongoLoad({"username": username})
-    accounts = list(account_coll.retrieve(coll_users, limit=1))
+    accounts = await list(account_coll.retrieve(coll_users, limit=1))
     if accounts:
         account = accounts[0]
         account["password"] = bytes(account["password"], "utf-8")
@@ -50,10 +50,10 @@ async def get_username(request: Request):
 
 
 @router.get("/test", response_class=HTMLResponse)
-def loginwithCreds(request: Request):
+async def loginwithCreds(request: Request):
     email = "marwan.mashra@gmail.com"
     account_coll = MongoLoad({"email": email})
-    account = list(account_coll.retrieve(coll_users, limit=1))
+    account = await list(account_coll.retrieve(coll_users, limit=1))
     return templates.TemplateResponse(
         "test.html", {"request": request, "data": account[0]}
     )
@@ -79,10 +79,10 @@ async def login_page(
 
 
 @router.post("/auth/login", response_class=RedirectResponse)
-def login(request: Request, data: OAuth2PasswordRequestForm = Depends()):
+async def login(request: Request, data: OAuth2PasswordRequestForm = Depends()):
     username = data.username.lower()
     password = data.password
-    user = load_user(username)
+    user = await load_user(username)
     if not user:
         error = 1
         url = request.url_for("login_page") + f"?error={error}"
@@ -120,15 +120,14 @@ async def register_page(
 
 
 @router.post("/auth/register", response_class=RedirectResponse)
-def register(
+async def register(
     request: Request,
     data: OAuth2PasswordRequestForm = Depends(),
     password2: str = Form(...),
 ):
     username = data.username.lower()
     password = data.password
-    print(username, password, password2)
-    user = load_user(username)
+    user = await load_user(username)
     if user:  # user already exists
         error = 3
         url = request.url_for("register_page") + f"?error={error}"
@@ -140,7 +139,7 @@ def register(
         hashed_password = str(hashed_password)[2:-1]  # convert bytes to string
         account = {"username": username, "password": hashed_password, "albums": {}}
         documents = MongoSave([account])
-        documents.storeindb(coll_users)
+        await documents.storeindb(coll_users)
         url = request.url_for("login_page")
     resp = RedirectResponse(url=url, status_code=status.HTTP_302_FOUND)
     return resp

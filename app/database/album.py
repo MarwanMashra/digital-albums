@@ -19,7 +19,7 @@ router.mount("/static", StaticFiles(directory="static"), name="static")
 async def get_albums(request: Request):
     username = await get_username(request)
     account_coll = MongoLoad({"username": username})
-    account = list(account_coll.retrieve(coll_users, limit=1))[0]
+    account = await list(account_coll.retrieve(coll_users, limit=1))[0]
     return account["albums"]
 
 
@@ -31,7 +31,7 @@ def album(request: Request, album_id: str):
 
 
 @router.post("/album/{album_id}")
-def album(request: Request, album_id: str):
+async def album(request: Request, album_id: str):
     if album_id[0] == "v":
         url_type = "view_url"
     elif album_id[0] == "e":
@@ -39,7 +39,7 @@ def album(request: Request, album_id: str):
     else:
         return {"status": "error", "message": "Album not found"}
     albums_coll = MongoLoad({url_type: album_id})
-    albums = list(albums_coll.retrieve(coll_albums, limit=1))
+    albums = await list(albums_coll.retrieve(coll_albums, limit=1))
     if len(albums) == 0:
         return {"status": "error", "message": "Album not found"}
     if url_type == "view_url":
@@ -48,19 +48,19 @@ def album(request: Request, album_id: str):
 
 
 @router.post("/delete_album/{album_id}/{creator}")
-def delete_album(request: Request, album_id: str, creator: str):
+async def delete_album(request: Request, album_id: str, creator: str):
     if album_id[0] != "e":
         return {"status": "error", "message": "Album can't be deleted with view url"}
     delete_images_from_album(album_id)
     albums_coll = MongoRemove({"edit_url": album_id})
-    albums_coll.remove(coll_albums)
+    await albums_coll.remove(coll_albums)
     users_coll = MongoLoad({"username": creator})
-    users = list(users_coll.retrieve(coll_users, limit=1))
+    users = await list(users_coll.retrieve(coll_users, limit=1))
     if len(users) == 1:
         albums = users[0]["albums"]
         albums.pop(album_id)
         db_update = MongoUpd({"username": creator}, {"$set": {"albums": albums}})
-        db_update.singleval_upd(coll_users)
+        await db_update.singleval_upd(coll_users)
     return {"status": "success"}
 
 
@@ -82,15 +82,15 @@ async def create_album(request: Request, album_name: str = Form(...)):
         "creator": username,
     }
     documents = MongoSave([album])
-    documents.storeindb(coll_albums)
+    await documents.storeindb(coll_albums)
     albums = await get_albums(request)
     albums[edit_url] = album_name
     db_update = MongoUpd({"username": username}, {"$set": {"albums": albums}})
-    db_update.singleval_upd(coll_users)
+    await db_update.singleval_upd(coll_users)
     return RedirectResponse(url=f"/album/{edit_url}", status_code=status.HTTP_302_FOUND)
 
 
-def add_images_album(url_list, album_id):
+async def add_images_album(url_list, album_id):
     if album_id[0] == "v":
         url_type = "view_url"
     elif album_id[0] == "e":
@@ -101,21 +101,21 @@ def add_images_album(url_list, album_id):
         db_update = MongoUpd(
             {url_type: album_id}, {"$addToSet": {"images": {"$each": url_list}}}
         )
-        db_update.singleval_upd(coll_albums)
+        await db_update.singleval_upd(coll_albums)
         return {"status": "success"}
     except:
         return {"status": "error", "message": "Album not found"}
 
 
-def delete_images_from_album(album_id):
+async def delete_images_from_album(album_id):
     albums_coll = MongoLoad({"edit_url": album_id})
-    albums = list(albums_coll.retrieve(coll_albums, limit=1))
+    albums = await list(albums_coll.retrieve(coll_albums, limit=1))
     if len(albums) != 0:
         list_url = albums[0]["images"]
         try:
             for url in list_url:
                 name = url.split("/")[-1]
-                list_imgs = image_kit.list_files(
+                list_imgs = await image_kit.list_files(
                     options=SearchImg(search_query=f'name="{name}"')
                 ).list
                 img_id = list_imgs[0].file_id
