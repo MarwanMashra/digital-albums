@@ -19,7 +19,7 @@ router.mount("/static", StaticFiles(directory="static"), name="static")
 async def get_albums(request: Request):
     username = await get_username(request)
     account_coll = MongoLoad({"username": username})
-    account = await list(account_coll.retrieve(coll_users, limit=1))[0]
+    account = await account_coll.retrieve(coll_users)
     return account["albums"]
 
 
@@ -39,25 +39,25 @@ async def album(request: Request, album_id: str):
     else:
         return {"status": "error", "message": "Album not found"}
     albums_coll = MongoLoad({url_type: album_id})
-    albums = await list(albums_coll.retrieve(coll_albums, limit=1))
-    if len(albums) == 0:
+    album = await albums_coll.retrieve(coll_albums)
+    if not album:
         return {"status": "error", "message": "Album not found"}
     if url_type == "view_url":
-        albums[0].pop("edit_url")
-    return {"album": albums[0], "status": "success"}
+        album.pop("edit_url")
+    return {"album": album, "status": "success"}
 
 
 @router.post("/delete_album/{album_id}/{creator}")
 async def delete_album(request: Request, album_id: str, creator: str):
     if album_id[0] != "e":
         return {"status": "error", "message": "Album can't be deleted with view url"}
-    delete_images_from_album(album_id)
+    await delete_images_from_album(album_id)
     albums_coll = MongoRemove({"edit_url": album_id})
     await albums_coll.remove(coll_albums)
     users_coll = MongoLoad({"username": creator})
-    users = await list(users_coll.retrieve(coll_users, limit=1))
-    if len(users) == 1:
-        albums = users[0]["albums"]
+    user = await users_coll.retrieve(coll_users)
+    if user:
+        albums = user["albums"]
         albums.pop(album_id)
         db_update = MongoUpd({"username": creator}, {"$set": {"albums": albums}})
         await db_update.singleval_upd(coll_users)
@@ -109,13 +109,13 @@ async def add_images_album(url_list, album_id):
 
 async def delete_images_from_album(album_id):
     albums_coll = MongoLoad({"edit_url": album_id})
-    albums = await list(albums_coll.retrieve(coll_albums, limit=1))
-    if len(albums) != 0:
-        list_url = albums[0]["images"]
+    album = await albums_coll.retrieve(coll_albums)
+    if album:
+        list_url = album["images"]
         try:
             for url in list_url:
                 name = url.split("/")[-1]
-                list_imgs = await image_kit.list_files(
+                list_imgs = image_kit.list_files(
                     options=SearchImg(search_query=f'name="{name}"')
                 ).list
                 img_id = list_imgs[0].file_id

@@ -3,7 +3,8 @@
 
 from os.path import join, dirname
 import dns, pymongo, sys, pprint, urllib
-
+from asyncio import ensure_future
+from motor.motor_asyncio import AsyncIOMotorClient
 
 """Extrait de mongoDB manual:
 'For a compound multikey index, each indexed document can have at most one indexed
@@ -23,7 +24,7 @@ for line in f:
         if index != -1:
             init[line[:index].strip()] = line[index + 1 :].strip()
 
-client = pymongo.MongoClient(
+client = AsyncIOMotorClient(
     "mongodb+srv://"
     + urllib.parse.quote_plus(init["username"])
     + ":"
@@ -45,28 +46,28 @@ class Mongo:
         return coll_exists in client.list_collection_names()
 
     @classmethod
-    def indexcheck(cls, coll_tocheck, index):
+    async def indexcheck(cls, coll_tocheck, index):
         """Vérifie l'existence d'un index. Renvoie vrai s'il existe, faux sinon. L'index
         en paramètre doit être une liste de champs à indexer.
         Retour de list_indexes(): itérateur sur des documents au format SON (dictionnaire
         ordonné). Convertir en dico Python avant utilisation.
         """
         coll = client[coll_tocheck]
-        for idx in coll.list_indexes():
+        async for idx in coll.list_indexes():
             idx = idx.to_dict()  # SON -> dictionnaire
             if all(name in index for name in idx["key"].keys()):
                 return True
         return False
 
     @classmethod
-    def nonunique_index(cls, coll_toindex, **index):
+    async def nonunique_index(cls, coll_toindex, **index):
         """Création d'un index n'imposant pas une contrainte d'unicité.
         Syntaxe pour l'index en paramètre: <nom champ du document>=<'A' ou 'D'>,... Sera
         passé à la fonction comme dictionnaire, puis converti en liste de tuples pour le
         passage à la méthode de pymongo.collections.
         """
         coll = client[coll_toindex]
-        if len(index) > 0 and cls.indexcheck(coll_toindex, list(index.keys())):
+        if len(index) > 0 and await cls.indexcheck(coll_toindex, list(index.keys())):
             return
 
         index_list = [
@@ -109,7 +110,7 @@ class MongoSave(Mongo):
             return
 
         coll = client[coll_tostore]
-        if not self.indexcheck(coll_tostore, list(index.keys())):
+        if not await self.indexcheck(coll_tostore, list(index.keys())):
             index_list = [
                 (key, pymongo.ASCENDING) if val == "A" else (key, pymongo.DESCENDING)
                 for key, val in index.items()
@@ -176,16 +177,12 @@ class MongoLoad(Mongo):
         self.query = query
         self.projection = proj
 
-    async def retrieve(self, coll_tosearch, limit=0):
+    async def retrieve(self, coll_tosearch):
         coll = client[coll_tosearch]
-        if not self.projection and limit == 0:
-            return await coll.find(self.query)
-        elif not self.projection:
-            return await coll.find(self.query, limit=limit)
-        elif limit == 0:
-            return await coll.find(self.query, self.projection)
+        if self.projection:
+            return await coll.find_one(self.query, self.projection)
         else:
-            return await coll.find(self.query, self.projection, limit=limit)
+            return await coll.find_one(self.query)
 
     async def dltdocument(self, coll_toupd):
         """Efface un ou plusieurs documents correspondants à la requête."""

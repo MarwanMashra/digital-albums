@@ -31,9 +31,8 @@ manager.cookie_name = "access-token"
 @manager.user_loader()
 async def load_user(username: str):
     account_coll = MongoLoad({"username": username})
-    accounts = list(await account_coll.retrieve(coll_users, limit=1))
-    if accounts:
-        account = accounts[0]
+    account = await account_coll.retrieve(coll_users)
+    if account:
         account["password"] = bytes(account["password"], "utf-8")
         return account
 
@@ -53,9 +52,9 @@ async def get_username(request: Request):
 async def loginwithCreds(request: Request):
     email = "marwan.mashra@gmail.com"
     account_coll = MongoLoad({"email": email})
-    account = await list(account_coll.retrieve(coll_users, limit=1))
+    account = await account_coll.retrieve(coll_users)
     return templates.TemplateResponse(
-        "test.html", {"request": request, "data": account[0]}
+        "test.html", {"request": request, "data": account}
     )
 
 

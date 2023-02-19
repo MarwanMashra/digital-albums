@@ -51,7 +51,7 @@ async def upload(images: List[UploadFile] = File(None), album_id: str = Form(...
             )
             url_list.append(upload_request.url)
     if len(url_list) != 0:
-        response = add_images_album(url_list, album_id)
+        response = await add_images_album(url_list, album_id)
         if response["status"] == "error":
             return response
     return RedirectResponse(url=f"/album/{album_id}", status_code=status.HTTP_302_FOUND)
