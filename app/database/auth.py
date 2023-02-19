@@ -31,7 +31,7 @@ manager.cookie_name = "access-token"
 @manager.user_loader()
 async def load_user(username: str):
     account_coll = MongoLoad({"username": username})
-    accounts = await list(account_coll.retrieve(coll_users, limit=1))
+    accounts = list(await account_coll.retrieve(coll_users, limit=1))
     if accounts:
         account = accounts[0]
         account["password"] = bytes(account["password"], "utf-8")
