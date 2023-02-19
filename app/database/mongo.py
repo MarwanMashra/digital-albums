@@ -102,7 +102,7 @@ class MongoSave(Mongo):
     def reinit(self, dblist):
         self.document = dblist
 
-    def storeindb(self, coll_tostore, **index):
+    async def storeindb(self, coll_tostore, **index):
         if (
             len(self.document) == 0
         ):  # Une liste vide passée à insert_many provoque un bug
@@ -116,10 +116,10 @@ class MongoSave(Mongo):
             ]
             if index_list:
                 index_name = "_".join(i[0].split("_")[0] for i in index_list)
-                coll.create_index(index_list, name=index_name, unique=True)
+                await coll.create_index(index_list, name=index_name, unique=True)
 
         try:
-            coll.insert_many(self.document, ordered=False)
+            await coll.insert_many(self.document, ordered=False)
         except pymongo.errors.BulkWriteError as error:
             for e in error.details["writeErrors"]:
                 if e["code"] == 11000:  # DuplicateKeyError
@@ -176,21 +176,21 @@ class MongoLoad(Mongo):
         self.query = query
         self.projection = proj
 
-    def retrieve(self, coll_tosearch, limit=0):
+    async def retrieve(self, coll_tosearch, limit=0):
         coll = client[coll_tosearch]
         if not self.projection and limit == 0:
-            return coll.find(self.query)
+            return await coll.find(self.query)
         elif not self.projection:
-            return coll.find(self.query, limit=limit)
+            return await coll.find(self.query, limit=limit)
         elif limit == 0:
-            return coll.find(self.query, self.projection)
+            return await coll.find(self.query, self.projection)
         else:
-            return coll.find(self.query, self.projection, limit=limit)
+            return await coll.find(self.query, self.projection, limit=limit)
 
-    def dltdocument(self, coll_toupd):
+    async def dltdocument(self, coll_toupd):
         """Efface un ou plusieurs documents correspondants à la requête."""
         coll = client[coll_toupd]
-        return coll.delete_many(self.query).deleted_count
+        return await coll.delete_many(self.query).deleted_count
 
 
 class MongoUpd(Mongo):
@@ -222,14 +222,14 @@ class MongoUpd(Mongo):
         self.list_id = list_id
         self.list_val = list_val
 
-    def singleval_upd(self, coll_toupd):
+    async def singleval_upd(self, coll_toupd):
         """Mise à jour groupée: plusieurs documents reçoivent la même mise à jour,
         c'est-à-dire un même champ est mis à jour avec la même valeur pour tous.
         """
         coll = client[coll_toupd]
-        coll.update_many(self.query, self.update)
+        await coll.update_many(self.query, self.update)
 
-    def multval_upd(self, coll_toupd, multfield):
+    async def multval_upd(self, coll_toupd, multfield):
         """Mise à jour individualisée: pour le même champ, chaque document reçoit
         une valeur propre. Le paramètre multfield désigne ce champ individualisé.
         """
@@ -242,13 +242,13 @@ class MongoUpd(Mongo):
             for operator in self.update.keys():
                 for key in self.update[operator].keys():
                     self.update[operator][key] = value
-            coll.update_one(self.query, self.update)
+            await coll.update_one(self.query, self.update)
 
 
 class MongoRemove(Mongo):
     def __init__(self, query):
         self.query = query
 
-    def remove(self, coll_toupd):
+    async def remove(self, coll_toupd):
         coll = client[coll_toupd]
-        coll.delete_one(self.query)
+        await coll.delete_one(self.query)
