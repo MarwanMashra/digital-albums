@@ -20,7 +20,7 @@ async def get_albums(request: Request):
     username = await get_username(request)
     if username is None:
         return RedirectResponse(
-            url=request.url_for("home_page"), status_code=status.HTTP_302_FOUND
+            url=request.url_for("login_page"), status_code=status.HTTP_302_FOUND
         )
     account_coll = MongoLoad({"username": username})
     account = await account_coll.retrieve(coll_users)
