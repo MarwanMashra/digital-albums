@@ -96,9 +96,13 @@ async def login(request: Request, data: OAuth2PasswordRequestForm = Depends()):
     )
     resp = RedirectResponse(url=url, status_code=status.HTTP_302_FOUND)
     manager.set_cookie(resp, access_token)
+    access_token = request.cookies.get("access-token")
+    try:
+        user = await manager.get_current_user(access_token)
+        print(user)
+    except:
+        print("LOL LOL LOL")
     # for _ in range(3):
-    #     access_token = request.cookies.get("access-token")
-    #     user = await manager.get_current_user(access_token)
     return resp
 
 
