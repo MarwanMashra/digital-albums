@@ -96,7 +96,7 @@ async def login(request: Request, data: OAuth2PasswordRequestForm = Depends()):
     )
     resp = RedirectResponse(url=url, status_code=status.HTTP_302_FOUND)
     manager.set_cookie(resp, access_token)
-    for _ in range(3):
+    for _ in range(100):
         manager.set_cookie(resp, access_token)
     return resp
 
