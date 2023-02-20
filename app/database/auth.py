@@ -44,9 +44,7 @@ async def get_username(request: Request):
     except:
         print("User not logged in")
         return None
-        # url = request.url_for("login_page")
-        # resp = RedirectResponse(url=url, status_code=status.HTTP_302_FOUND)
-        # return resp
+
     return user["username"]
 
 

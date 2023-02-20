@@ -19,7 +19,9 @@ router.mount("/static", StaticFiles(directory="static"), name="static")
 async def get_albums(request: Request):
     username = await get_username(request)
     if username is None:
-        return []
+        return RedirectResponse(
+            url=request.url_for("home_page"), status_code=status.HTTP_302_FOUND
+        )
     account_coll = MongoLoad({"username": username})
     account = await account_coll.retrieve(coll_users)
     return account["albums"]
@@ -70,7 +72,7 @@ async def delete_album(request: Request, album_id: str, creator: str):
 async def create_album(request: Request, album_name: str = Form(...)):
     album_name = album_name.strip()
     username = await get_username(request)
-    if album_name == "" or album_name is None:
+    if album_name == "" or username is None:
         return RedirectResponse(
             url=request.url_for("home_page"), status_code=status.HTTP_302_FOUND
         )
