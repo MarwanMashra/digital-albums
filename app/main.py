@@ -25,15 +25,13 @@ app.include_router(album.router)
 @app.get("/", name="home_page", response_class=HTMLResponse)
 async def get_account_endpoint(request: Request):
     # print cookies using manager
-    access_token = request.cookies.get("access-token")
-    try:
-        user = await manager.get_current_user(access_token)
-    except:
+    username = request.cookies.get(cookie_name)
+    if username is None:
         url = request.url_for("login_page")
         resp = RedirectResponse(url=url, status_code=status.HTTP_302_FOUND)
         return resp
     return templates.TemplateResponse(
-        "index.html", {"request": request, "username": user["username"]}
+        "index.html", {"request": request, "username": username}
     )
 
 

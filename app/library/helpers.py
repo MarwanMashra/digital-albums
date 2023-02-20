@@ -11,3 +11,4 @@ image_kit = ImageKit(
 
 coll_users = "users"
 coll_albums = "albums"
+cookie_name = "access-token"

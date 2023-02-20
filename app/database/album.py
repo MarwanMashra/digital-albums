@@ -5,7 +5,6 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from fastapi import Depends, status  # Assuming you have the FastAPI class for routing
 from fastapi_login.exceptions import InvalidCredentialsException  # Exception class
-from app.database.auth import get_username
 from app.library.helpers import *
 import uuid
 
@@ -17,7 +16,7 @@ router.mount("/static", StaticFiles(directory="static"), name="static")
 
 @router.post("/get_albums")
 async def get_albums(request: Request):
-    username = await get_username(request)
+    username = request.cookies.get(cookie_name)
     if username is None:
         return RedirectResponse(
             url=request.url_for("login_page"), status_code=status.HTTP_302_FOUND
@@ -71,7 +70,7 @@ async def delete_album(request: Request, album_id: str, creator: str):
 @router.post("/create_album", response_class=RedirectResponse)
 async def create_album(request: Request, album_name: str = Form(...)):
     album_name = album_name.strip()
-    username = await get_username(request)
+    username = request.cookies.get(cookie_name)
     if album_name == "" or username is None:
         return RedirectResponse(
             url=request.url_for("home_page"), status_code=status.HTTP_302_FOUND

@@ -25,7 +25,7 @@ ERROR_MSG = {
 }
 
 manager = LoginManager(SECRET, token_url="/auth/login", use_cookie=True)
-manager.cookie_name = "access-token"
+manager.cookie_name = cookie_name
 
 
 @manager.user_loader()
@@ -37,15 +37,15 @@ async def load_user(username: str):
         return account
 
 
-async def get_username(request: Request):
-    access_token = request.cookies.get("access-token")
-    try:
-        user = await manager.get_current_user(access_token)
-    except:
-        print("User not logged in")
-        return None
+# async def get_username(request: Request):
+#     access_token = request.cookies.get(cookie_name)
+#     try:
+#         user = await manager.get_current_user(access_token)
+#     except:
+#         print("User not logged in")
+#         return None
 
-    return user["username"]
+#     return user["username"]
 
 
 @router.get("/test", response_class=HTMLResponse)
@@ -59,22 +59,20 @@ async def loginwithCreds(request: Request):
 
 
 @router.get("/login", response_class=HTMLResponse, name="login_page")
-async def login_page(
+def login_page(
     request: Request,
     error=None,
 ):
-    try:
-        access_token = request.cookies.get("access-token")
-        user = await manager.get_current_user(access_token)
+    username = request.cookies.get(cookie_name)
+    if username:
         url = request.url_for("home_page")
         resp = RedirectResponse(url=url, status_code=status.HTTP_302_FOUND)
         return resp
-    except:
-        if error:
-            return templates.TemplateResponse(
-                "login.html", {"request": request, "error": ERROR_MSG[int(error)]}
-            )
-        return templates.TemplateResponse("login.html", {"request": request})
+    if error:
+        return templates.TemplateResponse(
+            "login.html", {"request": request, "error": ERROR_MSG[int(error)]}
+        )
+    return templates.TemplateResponse("login.html", {"request": request})
 
 
 @router.post("/auth/login", response_class=RedirectResponse)
@@ -90,11 +88,12 @@ async def login(request: Request, data: OAuth2PasswordRequestForm = Depends()):
         error = 2
         url = request.url_for("login_page") + f"?error={error}"
         return RedirectResponse(url=url, status_code=status.HTTP_302_FOUND)
-    access_token = manager.create_access_token(
-        data={"sub": username}, expires=timedelta(hours=12)
-    )
+    # access_token = manager.create_access_token(
+    #     data={"sub": username}, expires=timedelta(hours=12)
+    # )
     resp = RedirectResponse(url="/", status_code=status.HTTP_302_FOUND)
-    manager.set_cookie(resp, access_token)
+    # manager.set_cookie(resp, access_token)
+    resp.set_cookie(key=cookie_name, value=username, httponly=True)
     return resp
 
 
@@ -103,18 +102,16 @@ async def register_page(
     request: Request,
     error=None,
 ):
-    try:
-        access_token = request.cookies.get("access-token")
-        user = await manager.get_current_user(access_token)
+    username = request.cookies.get(cookie_name)
+    if username:
         url = request.url_for("home_page")
         resp = RedirectResponse(url=url, status_code=status.HTTP_302_FOUND)
         return resp
-    except:
-        if error:
-            return templates.TemplateResponse(
-                "register.html", {"request": request, "error": ERROR_MSG[int(error)]}
-            )
-        return templates.TemplateResponse("register.html", {"request": request})
+    if error:
+        return templates.TemplateResponse(
+            "register.html", {"request": request, "error": ERROR_MSG[int(error)]}
+        )
+    return templates.TemplateResponse("register.html", {"request": request})
 
 
 @router.post("/auth/register", response_class=RedirectResponse)
@@ -152,5 +149,5 @@ async def home(request: Request):
 @router.post("/logout", response_class=RedirectResponse)
 async def logout(request: Request, response: Response):
     resp = RedirectResponse(url="/login", status_code=302)
-    resp.delete_cookie("access-token")
+    resp.delete_cookie(cookie_name)
     return resp
