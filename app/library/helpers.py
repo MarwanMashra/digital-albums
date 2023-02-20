@@ -27,8 +27,11 @@ def encrypt(message):
 
 
 def decrypt(encMessage):
-    fernet = Fernet(key)
-    decMessage = fernet.decrypt(encMessage).decode()
+    try:
+        fernet = Fernet(key)
+        decMessage = fernet.decrypt(encMessage).decode()
+    except:
+        decMessage = None
     return decMessage
 
 
