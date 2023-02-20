@@ -8,7 +8,7 @@ from fastapi_login.exceptions import InvalidCredentialsException  # Exception cl
 from app.database.auth import get_username
 from app.library.helpers import *
 import uuid
-
+from app.database.auth import manager
 
 router = APIRouter(tags=["album"])
 templates = Jinja2Templates(directory="templates")
@@ -17,12 +17,19 @@ router.mount("/static", StaticFiles(directory="static"), name="static")
 
 @router.post("/get_albums")
 async def get_albums(request: Request):
-    username = await get_username(request)
-    if username is None:
+    # username = await get_username(request)
+    # if username is None:
+    #     return RedirectResponse(
+    #         url=request.url_for("login_page"), status_code=status.HTTP_302_FOUND
+    #     )
+    access_token = request.cookies.get("access-token")
+    try:
+        user = await manager.get_current_user(access_token)
+    except:
         return RedirectResponse(
             url=request.url_for("login_page"), status_code=status.HTTP_302_FOUND
         )
-    account_coll = MongoLoad({"username": username})
+    account_coll = MongoLoad({"username": user["username"]})
     account = await account_coll.retrieve(coll_users)
     return account["albums"]
 

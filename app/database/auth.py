@@ -42,7 +42,6 @@ async def get_username(request: Request):
     try:
         user = await manager.get_current_user(access_token)
     except:
-        print(access_token)
         print("User not logged in")
         return None
 
