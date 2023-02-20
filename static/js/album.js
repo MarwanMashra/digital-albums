@@ -1,24 +1,5 @@
 
 $(document).ready(function () {
-
-    $("#animated-thumbnails-gallery").
-        justifiedGallery({
-            captions: false,
-            lastRow: "hide",
-            rowHeight: 180,
-            margins: 5
-        }).
-        on("jg.complete", function () {
-            lightGallery(document.getElementById('animated-thumbnails-gallery'), {
-                plugins: [lgAutoplay, lgComment, lgFullscreen, lgHash, lgPager, lgRotate, lgShare, lgVideo, lgZoom, lgThumbnail],
-                thumbnail: true,
-                speed: 300,
-                download: false,
-                cssEasing: "cubic-bezier(0.25, 0, 0.25, 1)",
-                // mode: "lg-fade",
-        });
-    });
-    
     
     path = window.location.pathname
     if (path.split("/")[1] == "album") {
@@ -152,7 +133,6 @@ function displayAlbum(album, album_id) {
     $("#animated-thumbnails-gallery").
         justifiedGallery({
             captions: false,
-            lastRow: "hide",
             rowHeight: 180,
             margins: 5
         }).

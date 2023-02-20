@@ -1,0 +1,83 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>My Digital Albums</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="{{ url_for('static', path='/libraries/jquery-image-uploader/styles/image-uploader.min.css') }}">
+    <link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css'>
+    <link rel="stylesheet" href="{{ url_for('static', path='/libraries/lightGallery/css/lightgallery-bundle.css') }}">
+    <link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/css/justifiedGallery.min.css'> -->
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', path='/css/album.css') }}">
+
+</head>
+<body>
+    <h1 id="album_name">Album </h1>
+    <div id="edit_section"></div>
+    <div id="gallery"></div>
+    <div class="container-sm">
+        <div class="row justify-content-center">
+          <div class="col col-md-10">
+            <div class="gallery-container" id="animated-thumbnails-gallery">
+              <a data-lg-size="1600-1067" class="gallery-item" data-src="https://images.unsplash.com/photo-1609342122563-a43ac8917a3a?ixlib=rb-1.2.1&ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&auto=format&fit=crop&w=1600&q=80" data-sub-html="<h4>Photo by - <a href='https://unsplash.com/@tobbes_rd' >Tobias Rademacher </a></h4><p> Location - <a href='https://unsplash.com/s/photos/puezgruppe%2C-wolkenstein-in-gr%C3%B6den%2C-s%C3%BCdtirol%2C-italien'>Puezgruppe, Wolkenstein in Gröden, Südtirol, Italien</a>layers of blue.</p>">
+                <img alt="layers of blue." class="img-responsive" src="https://images.unsplash.com/photo-1609342122563-a43ac8917a3a?ixlib=rb-1.2.1&ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&auto=format&fit=crop&w=240&q=80" />
+              </a>
+              <a data-lg-size="1600-2400" data-pinterest-text="Pin it2" data-tweet-text="lightGallery slide  2" class="gallery-item" data-src="https://images.unsplash.com/photo-1608481337062-4093bf3ed404?ixlib=rb-1.2.1&ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&auto=format&fit=crop&w=1600&q=80" data-sub-html="<h4>Photo by - <a href='https://unsplash.com/@therawhunter' >Massimiliano Morosinotto </a></h4><p> Location - <a href='https://unsplash.com/s/photos/tre-cime-di-lavaredo%2C-italia'>Tre Cime di Lavaredo, Italia</a>This is the Way</p>">
+                <img class="img-responsive" src="https://images.unsplash.com/photo-1608481337062-4093bf3ed404?ixlib=rb-1.2.1&ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&auto=format&fit=crop&w=240&q=80" />
+              </a>
+              <a data-lg-size="1600-2400" data-pinterest-text="Pin it3" data-tweet-text="lightGallery slide  4" class="gallery-item" data-src="https://images.unsplash.com/photo-1605973029521-8154da591bd7?ixlib=rb-1.2.1&ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&auto=format&fit=crop&w=1600&q=80" data-sub-html="<h4>Photo by - <a href='https://unsplash.com/@thesaboo' >Sascha Bosshard </a></h4><p> Location - <a href='https://unsplash.com/s/photos/pizol%2C-mels%2C-schweiz'>Pizol, Mels, Schweiz</a></p>">
+                <img class="img-responsive" src="https://images.unsplash.com/photo-1605973029521-8154da591bd7?ixlib=rb-1.2.1&ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&auto=format&fit=crop&w=240&q=80" />
+              </a>
+              <a data-lg-size="1600-2398" data-pinterest-text="Pin it3" data-tweet-text="lightGallery slide  4" class="gallery-item" data-src="https://images.unsplash.com/photo-1526281216101-e55f00f0db7a?ixlib=rb-1.2.1&ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&auto=format&fit=crop&w=1600&q=80" data-sub-html="<h4>Photo by - <a href='https://unsplash.com/@yusufevli' >Yusuf Evli </a></h4><p> Foggy Road</p>">
+                <img class="img-responsive" src="https://images.unsplash.com/photo-1526281216101-e55f00f0db7a?ixlib=rb-1.2.1&ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&auto=format&fit=crop&w=240&q=80" />
+              </a>
+
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+    <script src='https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.js'></script>
+    <script src="{{ url_for('static', path='/libraries/jquery-image-uploader/js/image-uploader.min.js') }}"></script>
+    <script src='https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/js/jquery.justifiedGallery.js'></script>
+
+    <script src="{{ url_for('static', path='/libraries/lightGallery/js/lightgallery.min.js') }}"></script>
+    <script src="{{ url_for('static', path='/libraries/lightGallery/js/plugins/zoom/lg-zoom.umd.js') }}"></script>
+    <script src="{{ url_for('static', path='/libraries/lightGallery/js/plugins/thumbnail/lg-thumbnail.umd.js') }}"></script>
+    <script src="{{ url_for('static', path='/libraries/lightGallery/js/plugins/autoplay/lg-autoplay.umd.js') }}"></script>
+    <script src="{{ url_for('static', path='/libraries/lightGallery/js/plugins/comment/lg-comment.umd.js') }}"></script>
+    <script src="{{ url_for('static', path='/libraries/lightGallery/js/plugins/fullscreen/lg-fullscreen.umd.js') }}"></script>
+    <script src="{{ url_for('static', path='/libraries/lightGallery/js/plugins/hash/lg-hash.umd.js') }}"></script>
+    <script src="{{ url_for('static', path='/libraries/lightGallery/js/plugins/pager/lg-pager.umd.js') }}"></script>
+    <script src="{{ url_for('static', path='/libraries/lightGallery/js/plugins/rotate/lg-rotate.umd.js') }}"></script>
+    <script src="{{ url_for('static', path='/libraries/lightGallery/js/plugins/share/lg-share.umd.js') }}"></script>
+    <script src="{{ url_for('static', path='/libraries/lightGallery/js/plugins/video/lg-video.umd.js') }}"></script>
+    
+    <script>
+      
+      $(document).ready(function () {
+
+      $("#animated-thumbnails-gallery").
+          justifiedGallery({
+              captions: false,
+              rowHeight: 180,
+              margins: 5,
+          }).
+          on("jg.complete", function () {
+              lightGallery(document.getElementById('animated-thumbnails-gallery'), {
+                  plugins: [lgAutoplay, lgComment, lgFullscreen, lgHash, lgPager, lgRotate, lgShare, lgVideo, lgZoom, lgThumbnail],
+                  thumbnail: true,
+                  speed: 300,
+                  download: false,
+                  cssEasing: "cubic-bezier(0.25, 0, 0.25, 1)",
+                  // mode: "lg-fade",
+          });
+      });
+
+      });
+
+    </script>
+    
+</body>
+</html>
