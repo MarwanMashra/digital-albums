@@ -5,8 +5,8 @@ from imagekitio.models.ListAndSearchFileRequestOptions import (
 )
 
 
-# key = "7l3WaUBEYQvs9As1p4kGabxw0rKKyMc_-Mi1tqp-Tn0=".encode()
-key = Fernet.generate_key()
+key = "7l3WaUBEYQvs9As1p4kGabxw0rKKyMc_-Mi1tqp-Tn0=".encode()
+# key = Fernet.generate_key()
 
 
 image_kit = ImageKit(
