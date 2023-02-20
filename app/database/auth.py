@@ -90,11 +90,10 @@ async def login(request: Request, data: OAuth2PasswordRequestForm = Depends()):
         error = 2
         url = request.url_for("login_page") + f"?error={error}"
         return RedirectResponse(url=url, status_code=status.HTTP_302_FOUND)
-    url = request.url_for("home_page")
     access_token = manager.create_access_token(
         data={"sub": username}, expires=timedelta(hours=12)
     )
-    resp = RedirectResponse(url=url, status_code=status.HTTP_302_FOUND)
+    resp = RedirectResponse(url="/", status_code=status.HTTP_302_FOUND)
     manager.set_cookie(resp, access_token)
     return resp
 
