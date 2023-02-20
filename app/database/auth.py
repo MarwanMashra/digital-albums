@@ -63,7 +63,7 @@ def login_page(
     request: Request,
     error=None,
 ):
-    username = request.cookies.get(cookie_name)
+    username = get_cookie(request)
     if username:
         url = request.url_for("home_page")
         resp = RedirectResponse(url=url, status_code=status.HTTP_302_FOUND)
@@ -93,7 +93,7 @@ async def login(request: Request, data: OAuth2PasswordRequestForm = Depends()):
     # )
     resp = RedirectResponse(url="/", status_code=status.HTTP_302_FOUND)
     # manager.set_cookie(resp, access_token)
-    resp.set_cookie(key=cookie_name, value=username, httponly=True)
+    set_cookie(resp, username)
     return resp
 
 
@@ -102,7 +102,7 @@ async def register_page(
     request: Request,
     error=None,
 ):
-    username = request.cookies.get(cookie_name)
+    username = get_cookie(request)
     if username:
         url = request.url_for("home_page")
         resp = RedirectResponse(url=url, status_code=status.HTTP_302_FOUND)

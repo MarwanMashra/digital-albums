@@ -25,7 +25,7 @@ app.include_router(album.router)
 @app.get("/", name="home_page", response_class=HTMLResponse)
 async def get_account_endpoint(request: Request):
     # print cookies using manager
-    username = request.cookies.get(cookie_name)
+    username = get_cookie(request)
     if username is None:
         url = request.url_for("login_page")
         resp = RedirectResponse(url=url, status_code=status.HTTP_302_FOUND)
